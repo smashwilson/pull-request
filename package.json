@@ -1,0 +1,18 @@
+{
+  "name": "pull-request",
+  "main": "./lib/pull-request",
+  "version": "0.0.0",
+  "description": "A short description of your package",
+  "keywords": [
+  ],
+  "activationCommands": {
+    "atom-workspace": "pull-request:toggle"
+  },
+  "repository": "https://github.com/atom/pull-request",
+  "license": "MIT",
+  "engines": {
+    "atom": ">=1.0.0 <2.0.0"
+  },
+  "dependencies": {
+  }
+}
