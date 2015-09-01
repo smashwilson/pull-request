@@ -5,7 +5,7 @@
   "description": "A short description of your package",
   "keywords": [],
   "activationCommands": {
-    "atom-workspace": "pull-request:toggle"
+    "atom-workspace": "pull-request:open"
   },
   "repository": "https://github.com/atom/pull-request",
   "license": "MIT",
