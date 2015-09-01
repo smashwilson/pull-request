@@ -1,3 +1,5 @@
+"use babel";
+
 var PullRequest = require('../lib/pull-request');
 
 // Use the command `window:run-package-specs` (cmd-alt-ctrl-p) to run specs.

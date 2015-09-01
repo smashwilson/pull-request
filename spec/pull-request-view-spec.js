@@ -1,3 +1,5 @@
+"use babel";
+
 var PullRequestView = require('../lib/pull-request-view');
 
 describe("PullRequestView", function() {
