@@ -20,4 +20,17 @@ describe("SummaryComponent", function () {
     expect(descEditor.getText()).toBe("This is its description");
   });
 
+  it("updates the model's title", function () {
+    let pullRequest = new PullRequest();
+
+    let component = new SummaryComponent({pullRequest});
+    let element = component.element;
+
+    let titleEditor = element.querySelector("atom-text-editor.title").getModel();
+
+    titleEditor.setText("This is a new title");
+
+    expect(pullRequest.title).toBe("This is a new title");
+  });
+
 });
