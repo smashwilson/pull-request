@@ -1,6 +1,6 @@
 "use babel";
 
-import PullRequest from '../lib/models/pull-request';
+import PullRequest from '../../lib/models/pull-request';
 
 describe("PullRequest", function () {
 
