@@ -1,6 +1,6 @@
 "use babel";
 
-import PullRequest from '../../lib/models/pull-request';
+import PullRequest, {State} from '../../lib/models/pull-request';
 
 describe("PullRequest", function () {
 
@@ -10,7 +10,7 @@ describe("PullRequest", function () {
     beforeEach(() => pr = new PullRequest());
 
     it("begins in a draft state", function () {
-      expect(pr.isDraft()).toBe(true);
+      expect(pr.state).toBe(State.DRAFT);
     });
 
     it("begins with an empty title and description", function () {
