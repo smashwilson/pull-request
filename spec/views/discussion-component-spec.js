@@ -1,16 +1,16 @@
 "use babel";
 
-import SummaryComponent from '../../lib/views/summary-component';
+import DiscussionComponent from '../../lib/views/discussion-component';
 import PullRequest from '../../lib/models/pull-request';
 
-describe("SummaryComponent", function () {
+describe("DiscussionComponent", function () {
 
   it("populates fields from its model", function () {
     let pullRequest = new PullRequest();
     pullRequest.title = "This is a pull request title";
     pullRequest.description = "This is its description";
 
-    let component = new SummaryComponent({pullRequest});
+    let component = new DiscussionComponent({pullRequest});
     let element = component.element;
 
     let titleEditor = element.querySelector("atom-text-editor.title").getModel();
@@ -23,7 +23,7 @@ describe("SummaryComponent", function () {
   it("updates the model's title", function () {
     let pullRequest = new PullRequest();
 
-    let component = new SummaryComponent({pullRequest});
+    let component = new DiscussionComponent({pullRequest});
     let element = component.element;
 
     let titleEditor = element.querySelector("atom-text-editor.title").getModel();
