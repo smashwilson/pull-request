@@ -2,7 +2,7 @@
 
 import package from '../lib/main';
 
-describe("PullRequest", function() {
+describe("package entry point", function() {
   var [workspaceElement, activationPromise] = [];
 
   beforeEach(function() {
@@ -10,21 +10,21 @@ describe("PullRequest", function() {
     activationPromise = atom.packages.activatePackage('pull-request');
   });
 
-  describe("when the pull-request:open event is triggered", function() {
+  describe("when the pull-request:toggle event is triggered", function() {
     it("hides and shows the pull request panel", function() {
       expect(workspaceElement.querySelector('.pull-request')).not.toExist();
-      atom.commands.dispatch(workspaceElement, 'pull-request:open');
+      atom.commands.dispatch(workspaceElement, 'pull-request:toggle');
 
       waitsForPromise(() => activationPromise);
 
       runs(() => {
-        let pullRequestElement = workspaceElement.querySelector('.pull-request');
-        expect(pullRequestElement).toExist();
+        expect(workspaceElement.querySelector('.pull-request')).toExist();
 
-        let pullRequestPanel = atom.workspace.panelForItem(pullRequestElement);
+        let pullRequestPanel = package.pullRequestPanel;
+
         expect(pullRequestPanel.isVisible()).toBe(true);
-        atom.commands.dispatch(workspaceElement, 'pull-request:open');
-        return expect(pullRequestPanel.isVisible()).toBe(false);
+        atom.commands.dispatch(workspaceElement, 'pull-request:toggle');
+        expect(pullRequestPanel.isVisible()).toBe(false);
       });
     });
 
