@@ -2,7 +2,8 @@
 
 import TargetComponent from '../../lib/views/target-component';
 
-import Repository, {Fork} from '../../lib/models/repository';
+import Repository from '../../lib/models/repository';
+import Fork from '../../lib/models/fork';
 import PullRequest from '../../lib/models/pull-request';
 
 describe("TargetComponent", function () {
