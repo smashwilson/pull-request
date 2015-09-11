@@ -14,6 +14,8 @@
   },
   "dependencies": {
     "async": "^1.4.2",
-    "etch": "0.0.7"
+    "etch": "0.0.7",
+    "node-github": "0.0.3",
+    "nodegit": "^0.4.1"
   }
 }
