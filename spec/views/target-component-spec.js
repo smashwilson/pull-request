@@ -25,11 +25,11 @@ describe("TargetComponent", function () {
   });
 
   it("shows the base fork and branch", function () {
-    expect(root.querySelector("span.base").innerHTML).toEqual("base/repo:base-branch");
+    expect(root.querySelector("span.base").innerHTML).toEqual("base:base-branch");
   });
 
   it("shows the head fork and branch", function () {
-    expect(root.querySelector("span.head").innerHTML).toEqual("head/repo:head-branch");
+    expect(root.querySelector("span.head").innerHTML).toEqual("head:head-branch");
   });
 
 });
