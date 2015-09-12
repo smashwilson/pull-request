@@ -130,7 +130,46 @@ describe("Repository", () => {
       });
     });
 
-    it("creates a draft pull request");
+    it("creates a draft pull request", () => {
+      let t = demoTransport.make({
+        git: {
+          originURL: "git@github.com:username/reponame.git",
+          currentBranch: "some-branch"
+        },
+        github: {
+          currentFork: {
+            full_name: "username/reponame",
+            default_branch: "master"
+          },
+          sourceFork: {
+            full_name: "baseorg/reponame",
+            default_branch: "devel"
+          },
+          sourcePullRequests: []
+        }
+      });
+
+      let pr, r = new Repository(".", t);
+
+      r.currentPullRequest((err, result) => pr = result);
+
+      waitsFor(() => pr);
+
+      runs(() => {
+        expect(pr.repository).toBe(r);
+        expect(pr.title).toBe("");
+        expect(pr.body).toBe("");
+        expect(pr.state).toBe(State.DRAFT);
+
+        expect(pr.baseFork.github).toBe(t.github);
+        expect(pr.baseFork.fullName).toBe("baseorg/reponame");
+        expect(pr.baseBranch).toBe("devel");
+
+        expect(pr.headFork.github).toBe(t.github);
+        expect(pr.headFork.fullName).toBe("username/reponame");
+        expect(pr.headBranch).toBe("some-branch");
+      });
+    });
 
   });
 
