@@ -8,7 +8,7 @@ describe("DiscussionComponent", function () {
   it("populates fields from its model", function () {
     let pullRequest = new PullRequest();
     pullRequest.title = "This is a pull request title";
-    pullRequest.description = "This is its description";
+    pullRequest.body = "This is its body";
 
     let component = new DiscussionComponent({pullRequest});
     let element = component.element;
@@ -16,8 +16,8 @@ describe("DiscussionComponent", function () {
     let titleEditor = element.querySelector("atom-text-editor.title").getModel();
     expect(titleEditor.getText()).toBe("This is a pull request title");
 
-    let descEditor = element.querySelector("atom-text-editor.description").getModel();
-    expect(descEditor.getText()).toBe("This is its description");
+    let descEditor = element.querySelector("atom-text-editor.body").getModel();
+    expect(descEditor.getText()).toBe("This is its body");
   });
 
   it("updates the model's title", function () {

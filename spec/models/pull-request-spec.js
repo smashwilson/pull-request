@@ -13,9 +13,9 @@ describe("PullRequest", function () {
       expect(pr.state).toBe(State.DRAFT);
     });
 
-    it("begins with an empty title and description", function () {
+    it("begins with an empty title and body", function () {
       expect(pr.title).toBe("");
-      expect(pr.description).toBe("");
+      expect(pr.body).toBe("");
     });
 
     it("starts without any comments", function () {
