@@ -95,8 +95,14 @@ describe("Repository", () => {
           currentBranch: "some-branch"
         },
         github: {
-          currentForkName: "username/reponame",
-          sourceForkName: "base-org/base-repo",
+          currentFork: {
+            full_name: "username/reponame",
+            default_branch: "master"
+          },
+          sourceFork: {
+            full_name: "base-org/base-repo",
+            default_branch: "master"
+          },
           sourcePullRequests: [existing]
         }
       });
