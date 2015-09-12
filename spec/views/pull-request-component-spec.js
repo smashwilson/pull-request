@@ -4,6 +4,7 @@ import {getScheduler} from 'etch';
 
 import PullRequestComponent from '../../lib/views/pull-request-component';
 import Repository from '../../lib/models/repository';
+import demoTransport from '../../lib/transport/demo';
 
 describe('PullRequestComponent', function () {
   let repository;
@@ -11,7 +12,7 @@ describe('PullRequestComponent', function () {
   let root;
 
   beforeEach(function () {
-    repository = new Repository();
+    repository = new Repository(".", demoTransport);
     component = new PullRequestComponent({repository});
     root = component.element;
   });
