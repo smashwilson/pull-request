@@ -1,36 +1,93 @@
 "use babel";
 
 import DiscussionComponent from '../../lib/views/discussion-component';
-import PullRequest from '../../lib/models/pull-request';
+import PullRequest, {State} from '../../lib/models/pull-request';
+import Mode from '../../lib/models/mode';
 
-describe("DiscussionComponent", function () {
+describe("DiscussionComponent", () => {
 
-  it("populates fields from its model", function () {
-    let pullRequest = new PullRequest();
-    pullRequest.title = "This is a pull request title";
-    pullRequest.description = "This is its description";
+  describe("mode", () => {
 
-    let component = new DiscussionComponent({pullRequest});
-    let element = component.element;
+    it("begins in edit mode with a draft", () => {
+      let pullRequest = new PullRequest();
+      pullRequest.state = State.DRAFT;
 
-    let titleEditor = element.querySelector("atom-text-editor.title").getModel();
-    expect(titleEditor.getText()).toBe("This is a pull request title");
+      let component = new DiscussionComponent({pullRequest});
+      expect(component.mode).toBe(Mode.EDIT);
+    });
 
-    let descEditor = element.querySelector("atom-text-editor.description").getModel();
-    expect(descEditor.getText()).toBe("This is its description");
+    it("begins in view mode when open", () => {
+      let pullRequest = new PullRequest();
+      pullRequest.state = State.OPEN;
+
+      let component = new DiscussionComponent({pullRequest});
+      expect(component.mode).toBe(Mode.VIEW);
+    });
+
   });
 
-  it("updates the model's title", function () {
-    let pullRequest = new PullRequest();
+  describe("in view mode", () => {
+    let pullRequest, component, element;
 
-    let component = new DiscussionComponent({pullRequest});
-    let element = component.element;
+    beforeEach(() => {
+      pullRequest = new PullRequest();
+      pullRequest.title = "This is an open pull request";
+      pullRequest.body = "This is its body";
+      pullRequest.state = State.OPEN;
 
-    let titleEditor = element.querySelector("atom-text-editor.title").getModel();
+      component = new DiscussionComponent({pullRequest});
 
-    titleEditor.setText("This is a new title");
+      element = component.element;
+    });
 
-    expect(pullRequest.title).toBe("This is a new title");
+    it("shows the current title and body", () => {
+      let titleElement = element.querySelector(".title");
+      expect(titleElement.innerHTML).toBe("This is an open pull request");
+
+      let bodyElement = element.querySelector(".body");
+      expect(bodyElement.innerHTML).toBe("This is its body");
+    });
+
+  });
+
+  describe("in edit mode", () => {
+    let pullRequest, component, element;
+
+    beforeEach(() => {
+      pullRequest = new PullRequest();
+      pullRequest.title = "This is a pull request title";
+      pullRequest.body = "This is its body";
+      pullRequest.state = State.DRAFT;
+
+      component = new DiscussionComponent({pullRequest});
+
+      element = component.element;
+    });
+
+    it("populates editors from its model", () => {
+      let titleEditor = element.querySelector("atom-text-editor.title").getModel();
+      expect(titleEditor.getText()).toBe("This is a pull request title");
+
+      let descEditor = element.querySelector("atom-text-editor.body").getModel();
+      expect(descEditor.getText()).toBe("This is its body");
+    });
+
+    it("updates the buffered title", () => {
+      let titleEditor = element.querySelector("atom-text-editor.title").getModel();
+      titleEditor.setText("This is a new title");
+
+      expect(component.titleBuffer).toBe("This is a new title");
+      expect(pullRequest.title).toBe("This is a pull request title");
+    });
+
+    it("updates the buffered body", () => {
+      let bodyEditor = element.querySelector("atom-text-editor.body").getModel();
+      bodyEditor.setText("This is a new body");
+
+      expect(component.bodyBuffer).toBe("This is a new body");
+      expect(pullRequest.body).toBe("This is its body");
+    });
+
   });
 
 });
