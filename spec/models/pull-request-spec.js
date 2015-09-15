@@ -96,6 +96,9 @@ describe("PullRequest", () => {
         expect(params).not.toBe(null);
         expect(params.fork).toBe(fork);
         expect(params.id).toBe(500);
+
+        expect(pr.title).toBe("refreshed title");
+        expect(pr.body).toBe("refreshed body");
       });
     }
 
