@@ -3,6 +3,7 @@
 import PullRequest, {State} from '../../lib/models/pull-request';
 
 import Repository from '../../lib/models/repository';
+import Fork from '../../lib/models/fork';
 import demoTransport from '../../lib/transport/demo';
 
 describe("PullRequest", () => {
@@ -34,29 +35,29 @@ describe("PullRequest", () => {
   });
 
   describe("refreshing", () => {
-    let t, pr, hook;
+    let repository, t, pr, hook;
 
     beforeEach(() => {
       hook = () => {};
       t = demoTransport.make({
         github: {
-          getPullRequest: (id, callback) => {
-            hook(id);
+          getPullRequest: (fork, id, callback) => {
+            hook(fork, id);
             callback(null, {
               title: "refreshed title",
-              body: "refreshed body",
+              body: "refreshed body"
             });
           }
         }
       });
 
-      let r = new Repository(".", t);
-      pr = new PullRequest(r);
+      repository = new Repository(".", t);
+      pr = new PullRequest(repository);
       pr.state = State.OPEN;
     });
 
-    it("is a no-op for draft PRs", () => {
-      pr.state = State.DRAFT;
+    let isANoOp = (state) => () => {
+      pr.state = state;
 
       let oops = false, done = false;
       hook = () => oops = true;
@@ -69,7 +70,38 @@ describe("PullRequest", () => {
       waitsFor(() => done);
 
       runs(() => expect(oops).toBe(false));
-    });
+    }
+
+    it("is a no-op for draft PRs", isANoOp(State.DRAFT));
+    it("is a no-op for busy PRs", isANoOp(State.BUSY));
+
+    let usesTheTransport = (state) => () => {
+      let fork = new Fork(repository, "username/reponame", "master")
+
+      pr.number = 500;
+      pr.state = state;
+      pr.baseFork = fork;
+
+      let params, done = false;
+      hook = (fork, id) => params = {fork, id};
+
+      pr.refresh((err) => {
+        expect(err).toBe(null);
+        done = true;
+      });
+
+      waitsFor(() => done);
+
+      runs(() => {
+        expect(params).not.toBe(null);
+        expect(params.fork).toBe(fork);
+        expect(params.id).toBe(500);
+      });
+    }
+
+    it("uses the transport for open PRs", usesTheTransport(State.OPEN));
+    it("uses the transport for closed PRs", usesTheTransport(State.CLOSED));
+    it("uses the transport for merged PRs", usesTheTransport(State.MERGED));
 
   })
 
