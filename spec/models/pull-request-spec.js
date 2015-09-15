@@ -10,7 +10,10 @@ describe("PullRequest", () => {
   describe("initial state", () => {
     let pr;
 
-    beforeEach(() => pr = new PullRequest());
+    beforeEach(() => {
+      let r = new Repository(".", demoTransport);
+      pr = new PullRequest(r);
+    });
 
     it("begins in a draft state", () => {
       expect(pr.state).toBe(State.DRAFT);
