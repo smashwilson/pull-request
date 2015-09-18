@@ -1,5 +1,7 @@
 "use babel";
 
+import {getScheduler} from 'etch';
+
 import DiscussionComponent from '../../lib/views/discussion-component';
 import PullRequest, {State} from '../../lib/models/pull-request';
 import Repository from '../../lib/models/repository';
@@ -103,6 +105,21 @@ describe("DiscussionComponent", () => {
       expect(component.bodyBuffer).toBe("This is a new body");
       expect(pullRequest.body).toBe("This is its body");
     });
+
+    it("applies changes on accept", () => {
+      component.refs.bodyEditor.getModel().setText("This is a new body");
+      component.refs.titleEditor.getModel().setText("This is a new title");
+
+      component.handleAccept();
+
+      waitsForPromise(() => getScheduler().getNextUpdatePromise());
+
+      runs(() => {
+        expect(component.mode).toBe(Mode.VIEW);
+        expect(pullRequest.body).toBe("This is a new body");
+        expect(pullRequest.title).toBe("This is a new title");
+      });
+    })
 
   });
 
