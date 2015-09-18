@@ -80,6 +80,14 @@ describe("DiscussionComponent", () => {
       expect(descEditor.getText()).toBe("This is its body");
     });
 
+    it("shows accept and cancel buttons", () => {
+      let acceptButton = element.querySelector("button.btn-success");
+      expect(acceptButton).not.toBe(null);
+
+      let cancelButton = element.querySelector("button.icon-circle-slash");
+      expect(cancelButton).not.toBe(null);
+    });
+
     it("updates the buffered title", () => {
       let titleEditor = element.querySelector("atom-text-editor.title").getModel();
       titleEditor.setText("This is a new title");
