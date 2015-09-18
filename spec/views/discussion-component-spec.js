@@ -2,14 +2,22 @@
 
 import DiscussionComponent from '../../lib/views/discussion-component';
 import PullRequest, {State} from '../../lib/models/pull-request';
+import Repository from '../../lib/models/repository';
 import Mode from '../../lib/models/mode';
 
+import demoTransport from '../../lib/transport/demo';
+
 describe("DiscussionComponent", () => {
+  let r;
+
+  beforeEach(() => {
+    r = new Repository(".", demoTransport);
+  });
 
   describe("mode", () => {
 
     it("begins in edit mode with a draft", () => {
-      let pullRequest = new PullRequest();
+      let pullRequest = new PullRequest(r);
       pullRequest.state = State.DRAFT;
 
       let component = new DiscussionComponent({pullRequest});
@@ -17,7 +25,7 @@ describe("DiscussionComponent", () => {
     });
 
     it("begins in view mode when open", () => {
-      let pullRequest = new PullRequest();
+      let pullRequest = new PullRequest(r);
       pullRequest.state = State.OPEN;
 
       let component = new DiscussionComponent({pullRequest});
@@ -30,7 +38,7 @@ describe("DiscussionComponent", () => {
     let pullRequest, component, element;
 
     beforeEach(() => {
-      pullRequest = new PullRequest();
+      pullRequest = new PullRequest(r);
       pullRequest.title = "This is an open pull request";
       pullRequest.body = "This is its body";
       pullRequest.state = State.OPEN;
@@ -54,7 +62,7 @@ describe("DiscussionComponent", () => {
     let pullRequest, component, element;
 
     beforeEach(() => {
-      pullRequest = new PullRequest();
+      pullRequest = new PullRequest(r);
       pullRequest.title = "This is a pull request title";
       pullRequest.body = "This is its body";
       pullRequest.state = State.DRAFT;
