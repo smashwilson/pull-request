@@ -170,7 +170,7 @@ describe("PullRequest", () => {
       }, (err) => {
         expect(err).toBe(null);
         cbCalled = true;
-      })
+      });
 
       waitsFor(() => cbCalled);
 
