@@ -106,6 +106,57 @@ describe("PullRequest", () => {
     it("uses the transport for closed PRs", usesTheTransport(State.CLOSED));
     it("uses the transport for merged PRs", usesTheTransport(State.MERGED));
 
-  })
+  });
+
+  describe("updating", () => {
+
+    let repository, t, pr, hook;
+
+    beforeEach(() => {
+      let lastAttrs = {};
+
+      hook = () => {};
+      t = demoTransport.make({
+        github: {
+          getPullRequest: (fork, number, callback) => {
+            callback(null, lastAttrs);
+          },
+
+          updatePullRequest: (fork, number, attrs, callback) => {
+            lastAttrs = attrs;
+            hook(fork, number, attrs);
+            callback(null);
+          }
+        }
+      });
+
+      repository = new Repository(".", t);
+      pr = new PullRequest(repository);
+      pr.body = "original body";
+      pr.title = "original title";
+    });
+
+    it("applies the changes directly to drafts", () => {
+      pr.state = State.DRAFT;
+
+      let hookCalled = false;
+      let cbCalled = false;
+      hook = () => hookCalled = true;
+
+      pr.update({
+        body: "draft body",
+        title: "draft title"
+      }, (err) => {
+        expect(err).toBe(null);
+        cbCalled = true;
+      });
+
+      expect(pr.body).toBe("draft body");
+      expect(pr.title).toBe("draft title");
+      expect(cbCalled).toBe(true);
+      expect(hookCalled).toBe(false);
+    });
+
+  });
 
 });
