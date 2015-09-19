@@ -157,6 +157,40 @@ describe("PullRequest", () => {
       expect(hookCalled).toBe(false);
     });
 
+    let usesTheTransport = (state) => () => {
+      pr.number = 543;
+      pr.state = state;
+
+      let hookParams = null;
+      let cbCalled = false;
+      hook = (fork, number, attrs) => {
+        hookParams = {fork, number, attrs};
+      };
+
+      pr.update({
+        body: "updated body",
+        title: "updated title"
+      }, (err) => {
+        expect(err).toBe(null);
+        cbCalled = true;
+      })
+
+      waitsFor(() => cbCalled);
+
+      runs(() => {
+        expect(hookParams.number).toBe(543);
+        expect(hookParams.attrs.body).toBe("updated body");
+        expect(hookParams.attrs.title).toBe("updated title");
+
+        expect(pr.body).toBe("updated body");
+        expect(pr.title).toBe("updated title");
+      });
+    };
+
+    it("uses the transport for open PRs", usesTheTransport(State.OPEN));
+    it("uses the transport for closed PRs", usesTheTransport(State.CLOSED));
+    it("uses the transport for merged PRs", usesTheTransport(State.MERGED));
+
   });
 
 });
