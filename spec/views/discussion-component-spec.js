@@ -110,9 +110,11 @@ describe("DiscussionComponent", () => {
       component.refs.bodyEditor.getModel().setText("This is a new body");
       component.refs.titleEditor.getModel().setText("This is a new title");
 
+      let promise = getScheduler().getNextUpdatePromise();
+
       component.handleAccept();
 
-      waitsForPromise(() => getScheduler().getNextUpdatePromise());
+      waitsForPromise(() => promise);
 
       runs(() => {
         expect(component.mode).toBe(Mode.VIEW);
