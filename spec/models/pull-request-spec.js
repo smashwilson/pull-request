@@ -113,19 +113,12 @@ describe("PullRequest", () => {
     let repository, t, pr, hook;
 
     beforeEach(() => {
-      let lastAttrs = {};
-
       hook = () => {};
       t = demoTransport.make({
         github: {
-          getPullRequest: (fork, number, callback) => {
-            callback(null, lastAttrs);
-          },
-
           updatePullRequest: (fork, number, attrs, callback) => {
-            lastAttrs = attrs;
             hook(fork, number, attrs);
-            callback(null);
+            callback(null, attrs);
           }
         }
       });
