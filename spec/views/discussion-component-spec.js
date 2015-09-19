@@ -119,7 +119,23 @@ describe("DiscussionComponent", () => {
         expect(pullRequest.body).toBe("This is a new body");
         expect(pullRequest.title).toBe("This is a new title");
       });
-    })
+    });
+
+    it("discards changes on cancel", () => {
+      component.refs.bodyEditor.getModel().setText("This is a new body");
+      component.refs.titleEditor.getModel().setText("This is a new title");
+
+      component.handleCancel();
+
+      waitsForPromise(() => getScheduler().getNextUpdatePromise());
+
+      runs(() => {
+        expect(component.mode).toBe(Mode.VIEW);
+
+        expect(pullRequest.body).toBe("This is its body");
+        expect(pullRequest.title).toBe("This is a pull request title");
+      });
+    });
 
   });
 
