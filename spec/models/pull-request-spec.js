@@ -45,7 +45,8 @@ describe("PullRequest", () => {
             hook(fork, id);
             callback(null, {
               title: "refreshed title",
-              body: "refreshed body"
+              body: "refreshed body",
+              state: "open"
             });
           }
         }
@@ -118,6 +119,9 @@ describe("PullRequest", () => {
         github: {
           updatePullRequest: (fork, number, attrs, callback) => {
             hook(fork, number, attrs);
+
+            attrs.state = attrs.state || "open";
+
             callback(null, attrs);
           }
         }
