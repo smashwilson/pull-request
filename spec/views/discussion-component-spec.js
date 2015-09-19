@@ -1,5 +1,7 @@
 "use babel";
 
+import {getScheduler} from 'etch';
+
 import DiscussionComponent from '../../lib/views/discussion-component';
 import PullRequest, {State} from '../../lib/models/pull-request';
 import Repository from '../../lib/models/repository';
@@ -80,6 +82,14 @@ describe("DiscussionComponent", () => {
       expect(descEditor.getText()).toBe("This is its body");
     });
 
+    it("shows accept and cancel buttons", () => {
+      let acceptButton = element.querySelector("button.btn-success");
+      expect(acceptButton).not.toBe(null);
+
+      let cancelButton = element.querySelector("button.icon-circle-slash");
+      expect(cancelButton).not.toBe(null);
+    });
+
     it("updates the buffered title", () => {
       let titleEditor = element.querySelector("atom-text-editor.title").getModel();
       titleEditor.setText("This is a new title");
@@ -94,6 +104,39 @@ describe("DiscussionComponent", () => {
 
       expect(component.bodyBuffer).toBe("This is a new body");
       expect(pullRequest.body).toBe("This is its body");
+    });
+
+    it("applies changes on accept", () => {
+      component.refs.bodyEditor.getModel().setText("This is a new body");
+      component.refs.titleEditor.getModel().setText("This is a new title");
+
+      let promise = getScheduler().getNextUpdatePromise();
+
+      component.handleAccept();
+
+      waitsForPromise(() => promise);
+
+      runs(() => {
+        expect(component.mode).toBe(Mode.VIEW);
+        expect(pullRequest.body).toBe("This is a new body");
+        expect(pullRequest.title).toBe("This is a new title");
+      });
+    });
+
+    it("discards changes on cancel", () => {
+      component.refs.bodyEditor.getModel().setText("This is a new body");
+      component.refs.titleEditor.getModel().setText("This is a new title");
+
+      component.handleCancel();
+
+      waitsForPromise(() => getScheduler().getNextUpdatePromise());
+
+      runs(() => {
+        expect(component.mode).toBe(Mode.VIEW);
+
+        expect(pullRequest.body).toBe("This is its body");
+        expect(pullRequest.title).toBe("This is a pull request title");
+      });
     });
 
   });
