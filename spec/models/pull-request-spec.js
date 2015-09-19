@@ -41,7 +41,7 @@ describe("PullRequest", () => {
       hook = () => {};
       t = demoTransport.make({
         github: {
-          getPullRequest: (fork, id, callback) => {
+          getPullRequest: (fork, id, etag, callback) => {
             hook(fork, id);
             callback(null, {
               title: "refreshed title",
@@ -117,7 +117,7 @@ describe("PullRequest", () => {
       hook = () => {};
       t = demoTransport.make({
         github: {
-          updatePullRequest: (fork, number, attrs, callback) => {
+          updatePullRequest: (fork, number, attrs, etag, callback) => {
             hook(fork, number, attrs);
 
             attrs.state = attrs.state || "open";
