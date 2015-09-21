@@ -75,6 +75,18 @@ describe("DetailComponent", () => {
       let editButton = element.querySelector("button.btn.icon-pencil");
       expect(editButton).not.toBe(null);
     });
+
+    it("toggles to edit mode", () => {
+      let promise = getScheduler().getNextUpdatePromise();
+
+      component.handleEdit();
+
+      waitsForPromise(() => promise);
+
+      runs(() => {
+        expect(component.mode).toBe(Mode.EDIT);
+      });
+    });
   });
 
   describe("in edit mode", () => {
