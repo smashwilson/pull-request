@@ -60,6 +60,35 @@ describe("DetailComponent", () => {
 
   });
 
+  describe("in view mode", () => {
+    let pullRequest, component, element;
+
+    beforeEach(() => {
+      pullRequest = new PullRequest(r);
+      pullRequest.state = State.OPEN;
+
+      component = new DetailComponent({pullRequest});
+      element = component.element;
+    });
+
+    it("shows an edit button", () => {
+      let editButton = element.querySelector("button.btn.icon-pencil");
+      expect(editButton).not.toBe(null);
+    });
+
+    it("toggles to edit mode", () => {
+      let promise = getScheduler().getNextUpdatePromise();
+
+      component.handleEdit();
+
+      waitsForPromise(() => promise);
+
+      runs(() => {
+        expect(component.mode).toBe(Mode.EDIT);
+      });
+    });
+  });
+
   describe("in edit mode", () => {
     let pullRequest, component, element;
 
