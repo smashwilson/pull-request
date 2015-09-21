@@ -2,14 +2,14 @@
 
 import {getScheduler} from 'etch';
 
-import DiscussionComponent from '../../lib/views/discussion-component';
+import DetailComponent from '../../lib/views/detail-component';
 import PullRequest, {State} from '../../lib/models/pull-request';
 import Repository from '../../lib/models/repository';
 import Mode from '../../lib/models/mode';
 
 import demoTransport from '../../lib/transport/demo';
 
-describe("DiscussionComponent", () => {
+describe("DetailComponent", () => {
   let r;
 
   beforeEach(() => {
@@ -22,7 +22,7 @@ describe("DiscussionComponent", () => {
       let pullRequest = new PullRequest(r);
       pullRequest.state = State.DRAFT;
 
-      let component = new DiscussionComponent({pullRequest});
+      let component = new DetailComponent({pullRequest});
       expect(component.mode).toBe(Mode.EDIT);
     });
 
@@ -30,7 +30,7 @@ describe("DiscussionComponent", () => {
       let pullRequest = new PullRequest(r);
       pullRequest.state = State.OPEN;
 
-      let component = new DiscussionComponent({pullRequest});
+      let component = new DetailComponent({pullRequest});
       expect(component.mode).toBe(Mode.VIEW);
     });
 
@@ -45,7 +45,7 @@ describe("DiscussionComponent", () => {
       pullRequest.body = "This is its body";
       pullRequest.state = State.OPEN;
 
-      component = new DiscussionComponent({pullRequest});
+      component = new DetailComponent({pullRequest});
 
       element = component.element;
     });
@@ -69,7 +69,7 @@ describe("DiscussionComponent", () => {
       pullRequest.body = "This is its body";
       pullRequest.state = State.DRAFT;
 
-      component = new DiscussionComponent({pullRequest});
+      component = new DetailComponent({pullRequest});
 
       element = component.element;
     });
@@ -127,9 +127,11 @@ describe("DiscussionComponent", () => {
       component.refs.bodyEditor.getModel().setText("This is a new body");
       component.refs.titleEditor.getModel().setText("This is a new title");
 
+      let promise = getScheduler().getNextUpdatePromise();
+
       component.handleCancel();
 
-      waitsForPromise(() => getScheduler().getNextUpdatePromise());
+      waitsForPromise(() => promise);
 
       runs(() => {
         expect(component.mode).toBe(Mode.VIEW);
