@@ -60,6 +60,23 @@ describe("DetailComponent", () => {
 
   });
 
+  describe("in view mode", () => {
+    let pullRequest, component, element;
+
+    beforeEach(() => {
+      pullRequest = new PullRequest(r);
+      pullRequest.state = State.OPEN;
+
+      component = new DetailComponent({pullRequest});
+      element = component.element;
+    });
+
+    it("shows an edit button", () => {
+      let editButton = element.querySelector("button.btn.icon-pencil");
+      expect(editButton).not.toBe(null);
+    });
+  });
+
   describe("in edit mode", () => {
     let pullRequest, component, element;
 
