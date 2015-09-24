@@ -36,7 +36,7 @@ describe("ActionComponent", () => {
     });
 
     it("shows close and merge buttons in OPEN", () => {
-      withPRState(State.DRAFT);
+      withPRState(State.OPEN);
 
       expect(component.refs.closeButton).not.toBe(null);
       let buttons = Array.prototype.slice.call(root.querySelectorAll(".btn"));
