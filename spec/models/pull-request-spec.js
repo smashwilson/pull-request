@@ -190,4 +190,19 @@ describe("PullRequest", () => {
 
   });
 
+  describe("events", () => {
+
+    it("emits an event when its state changes", () => {
+      let r = new Repository(".", demoTransport);
+      let pr = new PullRequest(r);
+
+      let updatedTo = null;
+
+      pr.onDidChangeState((state) => updatedTo = state);
+      pr.transitionTo(State.OPEN);
+      expect(updatedTo).toBe(State.OPEN);
+    });
+
+  });
+
 });
