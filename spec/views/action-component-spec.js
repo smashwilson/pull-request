@@ -1,19 +1,21 @@
 "use babel";
 
+import {getScheduler} from 'etch';
+
 import ActionComponent from '../../lib/views/action-component';
 import PullRequest, {State} from '../../lib/models/pull-request';
 import Repository from '../../lib/models/repository';
 import demoTransport from '../../lib/transport/demo';
 
 describe("ActionComponent", () => {
-  let r, component, root;
+  let r, pr, component, root;
 
   beforeEach(() => {
     r = new Repository(".", demoTransport);
   });
 
   let withPRState = (state) => {
-    let pr = new PullRequest(r);
+    pr = new PullRequest(r);
     pr.state = state;
 
     component = new ActionComponent({pullRequest: pr});
@@ -52,6 +54,21 @@ describe("ActionComponent", () => {
       expect(component.refs.reopenButton).not.toBe(null);
       let button = root.querySelector(".btn");
       expect(button.innerHTML).toBe("Reopen");
+    });
+  });
+
+  describe("state tracking", () => {
+    it("updates to match the current PR state", () => {
+      withPRState(State.DRAFT);
+      let promise = getScheduler().getNextUpdatePromise();
+
+      pr.transitionTo(State.OPEN);
+
+      waitsForPromise(() => promise);
+
+      runs(() => {
+        expect(root.querySelector(".btn-success").innerHTML).toBe("Merge");
+      });
     });
   });
 });
