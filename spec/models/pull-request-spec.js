@@ -190,6 +190,64 @@ describe("PullRequest", () => {
 
   });
 
+  describe("submitting", () => {
+    it("submits draft PRs", () => {
+      let createArguments = null;
+      let cbCalled = false;
+      let cbErr = null;
+
+      let t = demoTransport.make({
+        github: {
+          createPullRequest: (fork, msg, callback) => {
+            createArguments = {fork, msg};
+            callback(null, {
+              number: 4321,
+              state: "open",
+              title: "updated title",
+              body: "updated body"
+            });
+          }
+        }
+      });
+
+      let r = new Repository(".", t);
+      let pr = new PullRequest(r,
+        new Fork(r, "base/reponame", "master"), "base-branch",
+        new Fork(r, "mine/reponame", "master"), "head-branch");
+      pr.title = "original title";
+      pr.body = "original body";
+
+      pr.submit((err) => {
+        cbErr = err;
+        cbCalled = true;
+      });
+
+      expect(cbCalled).toBe(true);
+      expect(cbErr).toBe(null);
+      expect(createArguments.fork.fullName).toBe("base/reponame");
+      expect(createArguments.msg.title).toBe("original title");
+      expect(createArguments.msg.body).toBe("original body");
+      expect(createArguments.msg.base).toBe("base-branch");
+      expect(createArguments.msg.head).toBe("mine:head-branch");
+
+      expect(pr.title).toBe("updated title");
+      expect(pr.body).toBe("updated body");
+      expect(pr.state).toBe(State.OPEN);
+    });
+  });
+
+  describe("merging", () => {
+    it("merges open PRs");
+  });
+
+  describe("closing", () => {
+    it("closes open PRs");
+  });
+
+  describe("reopening", () => {
+    it("opens closed PRs");
+  });
+
   describe("events", () => {
 
     it("emits an event when its state changes", () => {
