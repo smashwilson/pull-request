@@ -10,21 +10,18 @@ describe("BasicCredentials", () => {
       password: options.password
     });
 
-    expect(c.isValid()).toBe(options.isValid);
     expect(c.canSignIn()).toBe(options.canSignIn);
   };
 
   it("doesn't allow empty input", withInput({
     username: "",
     password: "",
-    isValid: false,
     canSignIn: false
   }));
 
   it("accepts populated inputs", withInput({
     username: "me",
     password: "swordfish",
-    isValid: true,
     canSignIn: true
   }));
 
