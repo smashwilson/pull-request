@@ -34,7 +34,7 @@ describe("TwoFactorCredentials", () => {
   it("accepts a six-digit numeric code", withInput({
     code: "123456",
     isValid: true,
-    canVerify: false
+    canVerify: true
   }));
 
   it("invokes a callback on verify", () => {
