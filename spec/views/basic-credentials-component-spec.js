@@ -15,21 +15,18 @@ describe("BasicCredentialsComponent", () => {
 
   it("disables the Sign In button before username or password are populated", () => {
     let signInButton = root.querySelector(".btn.sign-in");
-    expect(signInButton.getAttribute("disabled")).toBe("disabled");
+    expect(signInButton.hasAttribute("disabled")).toBe(true);
   });
 
   it("enables the Sign In button once a username and password are typed", () => {
-    let usernameField = root.querySelector("input.username");
-    let passwordField = root.querySelector("input.password");
-
-    usernameField.setAttribute("value", "me");
-    passwordField.setAttribute("value", "shhh");
+    model.username = "me";
+    model.password = "secret";
 
     waitsForPromise(() => component.revalidate());
 
     runs(() => {
       let signInButton = root.querySelector(".btn.sign-in");
-      expect(signInButton.getAttribute("disabled")).not.toBe("disabled");
+      expect(signInButton.hasAttribute("disabled")).toBe(false);
     });
   });
 
@@ -39,7 +36,7 @@ describe("BasicCredentialsComponent", () => {
     waitsForPromise(() => component.revalidate());
 
     runs(() => {
-      expect(root.querySelector(".error-messages li").innerHTML).toBe("Oh no");
+      expect(root.querySelector(".error-messages li span.msg").innerHTML).toBe("Oh no");
     });
   });
 
