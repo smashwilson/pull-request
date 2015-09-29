@@ -1,11 +1,11 @@
 "use babel";
 
-import 2faCredentials from '../../lib/models/2fa-credentials';
+import TwoFactorCredentials from '../../lib/models/two-factor-credentials';
 
-describe("2faCredentials", () => {
+describe("TwoFactorCredentials", () => {
 
   let withInput = (options) => () => {
-    let c = new 2faCredentials({
+    let c = new TwoFactorCredentials({
       code: options.code
     });
 
@@ -38,7 +38,7 @@ describe("2faCredentials", () => {
   }));
 
   it("invokes a callback on verify", () => {
-    let c = new 2faCredentials({
+    let c = new TwoFactorCredentials({
       code: "123456"
     });
 
