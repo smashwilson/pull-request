@@ -20,6 +20,7 @@
     "dom-listener": "0.1.2",
     "etch": "0.1.0",
     "github": "0.2.4",
+    "keytar": "3.0.0",
     "nodegit": "0.5.0"
   }
 }
