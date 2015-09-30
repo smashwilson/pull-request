@@ -1,7 +1,7 @@
 "use babel";
 
+import etch from 'etch';
 import BasicCredentialsComponent from '../../lib/views/basic-credentials-component';
-
 import BasicCredentials from '../../lib/models/basic-credentials';
 
 describe("BasicCredentialsComponent", () => {
@@ -22,7 +22,7 @@ describe("BasicCredentialsComponent", () => {
     model.username = "me";
     model.password = "secret";
 
-    waitsForPromise(() => component.revalidate());
+    waitsForPromise(() => etch.updateElement(component));
 
     runs(() => {
       let signInButton = root.querySelector(".btn.sign-in");
@@ -33,7 +33,7 @@ describe("BasicCredentialsComponent", () => {
   it("displays an error message from the model", () => {
     model.errorMessage = "Oh no";
 
-    waitsForPromise(() => component.revalidate());
+    waitsForPromise(() => etch.updateElement(component));
 
     runs(() => {
       expect(root.querySelector(".error-messages li span.msg").innerHTML).toBe("Oh no");
