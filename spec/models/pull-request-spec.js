@@ -291,7 +291,53 @@ describe("PullRequest", () => {
   });
 
   describe("reopening", () => {
-    it("opens closed PRs");
+    it("opens closed PRs", () => {
+      let updateArguments = null;
+      let called = false;
+
+      let t = demoTransport.make({
+        github: {
+          updatePullRequest: (fork, number, attrs, etag, callback) => {
+            updateArguments = {fork, number, attrs, etag};
+
+            callback(null, {
+              number: 100,
+              state: "open",
+              title: "updated title",
+              body: "updated body",
+              meta: {etag: "c3d2e1"}
+            });
+          }
+        }
+      });
+
+      let r = new Repository(".", t);
+      let pr = new PullRequest(r,
+        new Fork(r, "base/reponame", "master"), "base-branch",
+        new Fork(r, "mine/reponame", "master"), "head-branch");
+      pr.number = 100;
+      pr.etag = "1e2d3c";
+      pr.title = "original title";
+      pr.body = "original body";
+      pr.state = State.CLOSED;
+
+      pr.reopen((err) => {
+        expect(err).toBe(null);
+        called = true;
+      });
+
+      expect(called).toBe(true);
+      expect(updateArguments.fork.fullName).toBe("base/reponame");
+      expect(updateArguments.number).toBe(100);
+      expect(updateArguments.attrs.state).toBe("open");
+      expect(updateArguments.attrs.title).toBe("original title");
+      expect(updateArguments.attrs.body).toBe("original body");
+
+      expect(pr.state).toBe(State.OPEN);
+      expect(pr.title).toBe("updated title");
+      expect(pr.body).toBe("updated body");
+      expect(pr.etag).toBe("c3d2e1");
+    });
   });
 
   describe("events", () => {
