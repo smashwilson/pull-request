@@ -5,8 +5,14 @@
 @import "ui-variables";
 
 .pull-request {
+  position: relative;
   padding: 15px;
   width: 500px;
+  height: 100%;
+
+  .clear {
+    clear: both;
+  }
 
   .target {
     margin-top: 10px;
@@ -46,4 +52,28 @@
       width: 480px;
     }
   }
+
+  .action {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+}
+
+.credentials {
+
+  .explanation {
+    text-align: center;
+    font-size: 120%;
+  }
+
+  .field {
+    text-align: center;
+
+    input {
+      width: 80%;
+    }
+  }
+
 }

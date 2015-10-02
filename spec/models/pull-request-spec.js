@@ -4,6 +4,7 @@ import PullRequest, {State} from '../../lib/models/pull-request';
 
 import Repository from '../../lib/models/repository';
 import Fork from '../../lib/models/fork';
+import Commit from '../../lib/models/commit';
 import demoTransport from '../../lib/transport/demo';
 
 describe("PullRequest", () => {
@@ -187,6 +188,215 @@ describe("PullRequest", () => {
     it("uses the transport for open PRs", usesTheTransport(State.OPEN));
     it("uses the transport for closed PRs", usesTheTransport(State.CLOSED));
     it("uses the transport for merged PRs", usesTheTransport(State.MERGED));
+
+  });
+
+  describe("submitting", () => {
+    it("submits draft PRs", () => {
+      let createArguments = null;
+      let cbCalled = false;
+      let cbErr = null;
+
+      let t = demoTransport.make({
+        github: {
+          createPullRequest: (fork, msg, callback) => {
+            createArguments = {fork, msg};
+            callback(null, {
+              number: 4321,
+              state: "open",
+              title: "updated title",
+              body: "updated body"
+            });
+          }
+        }
+      });
+
+      let r = new Repository(".", t);
+      let pr = new PullRequest(r,
+        new Fork(r, "base/reponame", "master"), "base-branch",
+        new Fork(r, "mine/reponame", "master"), "head-branch");
+      pr.title = "original title";
+      pr.body = "original body";
+
+      pr.submit((err) => {
+        cbErr = err;
+        cbCalled = true;
+      });
+
+      expect(cbCalled).toBe(true);
+      expect(cbErr).toBe(null);
+      expect(createArguments.fork.fullName).toBe("base/reponame");
+      expect(createArguments.msg.title).toBe("original title");
+      expect(createArguments.msg.body).toBe("original body");
+      expect(createArguments.msg.base).toBe("base-branch");
+      expect(createArguments.msg.head).toBe("mine:head-branch");
+
+      expect(pr.title).toBe("updated title");
+      expect(pr.body).toBe("updated body");
+      expect(pr.state).toBe(State.OPEN);
+    });
+  });
+
+  describe("merging", () => {
+    it("merges open PRs", () => {
+      let mergeArguments = null;
+      let called = false;
+
+      let t = demoTransport.make({
+        github: {
+          mergePullRequest: (fork, number, sha, callback) => {
+            mergeArguments = {fork, number, sha};
+
+            callback(null, {
+              sha: "1122334455",
+              merged: true,
+              message: "Pull Request successfully merged"
+            });
+          }
+        }
+      });
+
+      let r = new Repository(".", t);
+      let pr = new PullRequest(r,
+        new Fork(r, "base/reponame", "master"), "base-branch",
+        new Fork(r, "mine/reponame", "master"), "head-branch");
+      pr.number = 100;
+      pr.state = State.OPEN;
+      pr.commits = [
+        new Commit("1111", "first commit", ""),
+        new Commit("2222", "second commit", ""),
+        new Commit("3333", "unpushed third commit", "")
+      ];
+
+      pr.commits[0].pushed = true;
+      pr.commits[1].pushed = true;
+
+      pr.merge((err) => {
+        expect(err).toBe(null);
+        called = true;
+      });
+
+      expect(called).toBe(true);
+      expect(mergeArguments.fork.fullName).toBe("base/reponame");
+      expect(mergeArguments.number).toBe(100);
+      expect(mergeArguments.sha).toBe("2222");
+
+      expect(pr.state).toBe(State.MERGED);
+    });
+  });
+
+  describe("closing", () => {
+    it("closes open PRs", () => {
+      let updateArguments = null;
+      let called = false;
+
+      let t = demoTransport.make({
+        github: {
+          updatePullRequest: (fork, number, attrs, etag, callback) => {
+            updateArguments = {fork, number, attrs, etag};
+
+            callback(null, {
+              number: 100,
+              state: "closed",
+              title: "updated title",
+              body: "updated body",
+              meta: {etag: "c3d2e1"}
+            });
+          }
+        }
+      });
+
+      let r = new Repository(".", t);
+      let pr = new PullRequest(r,
+        new Fork(r, "base/reponame", "master"), "base-branch",
+        new Fork(r, "mine/reponame", "master"), "head-branch");
+      pr.number = 100;
+      pr.etag = "1e2d3c";
+      pr.title = "original title";
+      pr.body = "original body";
+      pr.state = State.OPEN;
+
+      pr.close((err) => {
+        expect(err).toBe(null);
+        called = true;
+      });
+
+      expect(called).toBe(true);
+      expect(updateArguments.fork.fullName).toBe("base/reponame");
+      expect(updateArguments.number).toBe(100);
+      expect(updateArguments.attrs.state).toBe("closed");
+      expect(updateArguments.attrs.title).toBe("original title");
+      expect(updateArguments.attrs.body).toBe("original body");
+
+      expect(pr.state).toBe(State.CLOSED);
+      expect(pr.title).toBe("updated title");
+      expect(pr.body).toBe("updated body");
+      expect(pr.etag).toBe("c3d2e1");
+    });
+  });
+
+  describe("reopening", () => {
+    it("opens closed PRs", () => {
+      let updateArguments = null;
+      let called = false;
+
+      let t = demoTransport.make({
+        github: {
+          updatePullRequest: (fork, number, attrs, etag, callback) => {
+            updateArguments = {fork, number, attrs, etag};
+
+            callback(null, {
+              number: 100,
+              state: "open",
+              title: "updated title",
+              body: "updated body",
+              meta: {etag: "c3d2e1"}
+            });
+          }
+        }
+      });
+
+      let r = new Repository(".", t);
+      let pr = new PullRequest(r,
+        new Fork(r, "base/reponame", "master"), "base-branch",
+        new Fork(r, "mine/reponame", "master"), "head-branch");
+      pr.number = 100;
+      pr.etag = "1e2d3c";
+      pr.title = "original title";
+      pr.body = "original body";
+      pr.state = State.CLOSED;
+
+      pr.reopen((err) => {
+        expect(err).toBe(null);
+        called = true;
+      });
+
+      expect(called).toBe(true);
+      expect(updateArguments.fork.fullName).toBe("base/reponame");
+      expect(updateArguments.number).toBe(100);
+      expect(updateArguments.attrs.state).toBe("open");
+      expect(updateArguments.attrs.title).toBe("original title");
+      expect(updateArguments.attrs.body).toBe("original body");
+
+      expect(pr.state).toBe(State.OPEN);
+      expect(pr.title).toBe("updated title");
+      expect(pr.body).toBe("updated body");
+      expect(pr.etag).toBe("c3d2e1");
+    });
+  });
+
+  describe("events", () => {
+
+    it("emits an event when its state changes", () => {
+      let r = new Repository(".", demoTransport);
+      let pr = new PullRequest(r);
+
+      let updatedTo = null;
+
+      pr.onDidChangeState((state) => updatedTo = state);
+      pr.transitionTo(State.OPEN);
+      expect(updatedTo).toBe(State.OPEN);
+    });
 
   });
 

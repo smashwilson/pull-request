@@ -5,7 +5,11 @@
   "description": "A short description of your package",
   "keywords": [],
   "activationCommands": {
-    "atom-workspace": "pull-request:toggle"
+    "atom-workspace": [
+      "pull-request:toggle",
+      "pull-request:sign-in",
+      "pull-request:sign-out"
+    ]
   },
   "repository": "https://github.com/atom/pull-request",
   "license": "MIT",
@@ -14,8 +18,10 @@
   },
   "dependencies": {
     "async": "1.4.2",
-    "etch": "0.0.7",
+    "dom-listener": "0.1.2",
+    "etch": "0.1.0",
     "github": "0.2.4",
-    "nodegit": "0.4.1"
+    "keytar": "3.0.0",
+    "nodegit": "0.5.0"
   }
 }

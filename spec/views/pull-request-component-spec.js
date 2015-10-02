@@ -6,22 +6,26 @@ import PullRequestComponent from '../../lib/views/pull-request-component';
 import Repository from '../../lib/models/repository';
 import demoTransport from '../../lib/transport/demo';
 
-describe('PullRequestComponent', function () {
+describe('PullRequestComponent', () => {
   let repository;
   let component;
   let root;
 
-  beforeEach(function () {
+  beforeEach(() => {
     repository = new Repository(".", demoTransport);
     component = new PullRequestComponent({repository});
     root = component.element;
   });
 
-  it('shows the target component', function () {
+  it('shows the target component', () => {
     expect(root.querySelector(".target")).toExist();
   });
 
-  it('begins in discussion mode', function () {
+  it('shows the action component', () => {
+    expect(root.querySelector(".action")).toExist();
+  });
+
+  it('begins in discussion mode', () => {
     expect(root.querySelector(".discussion")).toExist();
     expect(root.querySelector(".commit-list")).not.toExist();
 
@@ -29,7 +33,7 @@ describe('PullRequestComponent', function () {
     expect(root.querySelector(".commit-list-tab.selected")).not.toExist();
   });
 
-  it('switches to the commit list', function () {
+  it('switches to the commit list', () => {
     component.handleCommitList();
 
     waitsForPromise(() => getScheduler().getNextUpdatePromise());
